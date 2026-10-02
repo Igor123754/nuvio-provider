@@ -16,9 +16,7 @@
 // ---------------------------------------------------------------------
 var CATALOG = {
   movie: {
-    // 'TMDB_ID': 'https://www.mp4upload.com/XXXXXXXX',
-    // primer (zameni stvarnim mp4upload linkovima iz tvog kataloga):
-    // '338474': 'https://www.mp4upload.com/1b1dk44auun9',
+    // '378898': 'https://www.mp4upload.com/1b1dk44auun9',
   },
   tv: {
     // 'TMDB_ID_SEZONA_EPIZODA': 'https://www.mp4upload.com/XXXXXXXX',
