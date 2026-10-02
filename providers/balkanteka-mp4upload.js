@@ -16,11 +16,9 @@
 // ---------------------------------------------------------------------
 var CATALOG = {
   movie: {
-    // '378898': 'https://www.mp4upload.com/1b1dk44auun9',
+    '378898': 'https://www.mp4upload.com/1b1dk44auun9',
   },
   tv: {
-    // 'TMDB_ID_SEZONA_EPIZODA': 'https://www.mp4upload.com/XXXXXXXX',
-    // primer: '1234_1_5': 'https://www.mp4upload.com/abc123'
   },
 };
 
