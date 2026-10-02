@@ -1,0 +1,19 @@
+{
+  "name": "Balkanteka",
+  "version": "1.0.0",
+  "scrapers": [
+    {
+      "id": "balkanteka-mp4upload",
+      "name": "Balkanteka (mp4upload)",
+      "description": "Domaći filmovi i serije — direktan mp4upload resolver, lokalno na uređaju",
+      "version": "1.0.0",
+      "author": "Djoka",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "https://raw.githubusercontent.com/TVOJ-GITHUB-NALOG/balkanteka-nuvio-plugin/main/providers/balkanteka-mp4upload.js",
+      "enabled": true,
+      "formats": ["mp4"],
+      "logo": "",
+      "contentLanguage": ["sr"]
+    }
+  ]
+}
