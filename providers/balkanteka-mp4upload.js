@@ -11,7 +11,6 @@
 var CATALOG = {
   movie: {
     '378898': 'https://www.mp4upload.com/1b1dk44auun9',
-    '269048': 'https://www.mp4upload.com/v65zgc4svhlk',
   },
   tv: {
   },
@@ -87,7 +86,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
       if (!resolved) return [];
       return [
         {
-          name: 'Balkanteka (mp4upload)',
+          name: 'Домаћи филмови и серије',
           title: 'Direktan stream',
           url: resolved.url,
           headers: resolved.headers,
