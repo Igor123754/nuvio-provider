@@ -1,18 +1,12 @@
 // balkanteka-mp4upload.js — samostalan Nuvio plugin.
 //
-// Radi SAMO lokalno na uredjaju. Ne zove Vercel, ne zove tvoj Stremio
-// addon, ni jedan spoljni server osim mp4upload.com samog. Nuvio ovaj
-// fajl preuzima direktno sa GitHub-a (raw URL naveden u manifest.json)
-// i izvrsava ga u svom JS sandbox-u.
-//
-// BEZ async/await — neki Nuvio sandbox formati to ne podrzavaju, pa je
-// sve u cistom Promise/.then() stilu.
+// Radi SAMO lokalno na uredjaju. Ne zove Vercel ni tvoj Stremio addon,
+// samo mp4upload.com. BEZ async/await (cist Promise/.then() stil).
 
 // ---------------------------------------------------------------------
-// 1) KATALOG — parovi TMDB ID -> mp4upload URL, prepisani iz tvog
-//    postojeceg Stremio addon-a (polja 'tmdb' i 'stream'). Ovo se
-//    odrzava RUCNO ovde, odvojeno od Stremio addon-a — plugin ne cita
-//    tvoj addon kod niti tvoj Vercel, nosi sopstvenu kopiju podataka.
+// 1) KATALOG — TMDB ID -> mp4upload URL. Odrzava se rucno, ovde.
+//    Filmovi: 'TMDB_ID': 'https://www.mp4upload.com/XXXX'
+//    Serije:  'TMDB_ID_SEZONA_EPIZODA': 'https://www.mp4upload.com/XXXX'
 // ---------------------------------------------------------------------
 var CATALOG = {
   movie: {
@@ -22,17 +16,37 @@ var CATALOG = {
   },
 };
 
-// ---------------------------------------------------------------------
-// 2) RESOLVER — izvlaci direktan .mp4 link iz mp4upload embed stranice.
-//    Isti princip koji Kodi vec koristi preko ResolveURL: Referer mora
-//    biti tacno embed-xxxxx.html stranica sa koje je link pokrenut.
-// ---------------------------------------------------------------------
 var UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0';
 
 function toEmbedUrl(inputUrl) {
   var match = inputUrl.match(/mp4upload\.com\/(?:embed-)?([0-9a-zA-Z]+)/);
   if (!match) return null;
   return 'https://www.mp4upload.com/embed-' + match[1] + '.html';
+}
+
+// ---------------------------------------------------------------------
+// 2) IZVLACENJE LINKA
+//    Prvi obrazac je isti kao u ResolveURL mp4upload resolveru:
+//        src("https://....")
+//    Ostali su rezerva ako sajt promeni zapis.
+// ---------------------------------------------------------------------
+var SOURCE_PATTERNS = [
+  /src\(\s*["']([^"']+)["']/,                                   // player.src("...")  (ResolveURL)
+  /src\s*:\s*["']([^"']+)["']/,                                 // src: "..."
+  /file\s*:\s*["']([^"']+)["']/,                                // file: "..."
+  /(https?:\\?\/\\?\/[^"'\s]*mp4upload\.com[^"'\s]*\.mp4)/      // bilo koji .mp4 na mp4upload domenu
+];
+
+function findSource(html) {
+  for (var i = 0; i < SOURCE_PATTERNS.length; i++) {
+    var m = html.match(SOURCE_PATTERNS[i]);
+    if (m && m[1]) {
+      var candidate = m[1].replace(/\\\//g, '/');
+      // prihvati samo prave http(s) linkove, ne npr. src("") ili relativne putanje
+      if (/^https?:\/\//.test(candidate)) return candidate;
+    }
+  }
+  return null;
 }
 
 function extractDirectUrl(inputUrl) {
@@ -45,39 +59,27 @@ function extractDirectUrl(inputUrl) {
       return res.text();
     })
     .then(function (html) {
-      // Trazi "src":"https://xx.mp4upload.com:PORT/d/HASH/video.mp4"
-      // (mp4upload ponekad escape-uje kose crte kao \/ u JS stringu)
-      var srcMatch = html.match(
-        /src\s*:\s*"(https:\\?\/\\?\/[^"]*mp4upload\.com[^"]*\/video\.mp4)"/
-      );
-      if (!srcMatch) return null;
-
+      var url = findSource(html);
+      if (!url) return null;
       return {
-        url: srcMatch[1].replace(/\\\//g, '/'),
+        url: url,
         headers: { 'User-Agent': UA, Referer: embedUrl },
       };
     });
 }
 
 // ---------------------------------------------------------------------
-// 3) ULAZNA TACKA — ono sto Nuvio zove
+// 3) ULAZNA TACKA
 // ---------------------------------------------------------------------
 function getStreams(tmdbId, mediaType, season, episode) {
-  var key;
   var rawUrl;
-
   if (mediaType === 'tv') {
-    key = tmdbId + '_' + season + '_' + episode;
-    rawUrl = CATALOG.tv[key];
+    rawUrl = CATALOG.tv[tmdbId + '_' + season + '_' + episode];
   } else {
     rawUrl = CATALOG.movie[tmdbId];
   }
 
-  if (!rawUrl) {
-    // Ovaj naslov kod tebe nije na mp4upload-u — prazan niz,
-    // Nuvio ce samo preskociti ovaj provider za njega.
-    return Promise.resolve([]);
-  }
+  if (!rawUrl) return Promise.resolve([]);
 
   return extractDirectUrl(rawUrl)
     .then(function (resolved) {
@@ -91,14 +93,13 @@ function getStreams(tmdbId, mediaType, season, episode) {
         },
       ];
     })
-    .catch(function (err) {
-      console.error('[balkanteka-mp4upload] greska:', err && err.message);
+    .catch(function () {
       return [];
     });
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { getStreams: getStreams };
+  module.exports = { getStreams: getStreams, findSource: findSource };
 } else {
   global.getStreams = getStreams;
 }
