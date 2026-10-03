@@ -25,6 +25,7 @@ var CATALOG = {
     '432450': 'https://www.mp4upload.com/hvh2kuu64eu8',
     '364688': 'https://www.mp4upload.com/vmfxw74zw272',
     '388772': 'https://www.mp4upload.com/zwqcbp5bako3',
+    '367223': 'https://www.mp4upload.com/2ff63p7v1r1h',
   },
   tv: {
   },
