@@ -9,7 +9,7 @@
       "version": "1.0.0",
       "author": "Djoka",
       "supportedTypes": ["movie", "tv"],
-      "filename": "https://raw.githubusercontent.com/TVOJ-GITHUB-NALOG/balkanteka-nuvio-plugin/main/providers/balkanteka-mp4upload.js",
+      "filename": "https://raw.githubusercontent.com/Igor123754/nuvio-provider/main/providers/balkanteka-mp4upload.js",
       "enabled": true,
       "formats": ["mp4"],
       "logo": "",
