@@ -4,7 +4,7 @@
   "scrapers": [
     {
       "id": "balkanteka-mp4upload",
-      "name": "Balkanteka (mp4upload)",
+      "name": "Домаћи филмови и серије",
       "description": "Domaći filmovi i serije — direktan mp4upload resolver, lokalno na uređaju",
       "version": "1.0.0",
       "author": "Djoka",
