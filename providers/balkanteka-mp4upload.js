@@ -50,7 +50,7 @@ var SOURCE_PATTERNS = [
   /src\(\s*["']([^"']+)["']/,                                   // player.src("...")  (ResolveURL)
   /src\s*:\s*["']([^"']+)["']/,                                 // src: "..."
   /file\s*:\s*["']([^"']+)["']/,                                // file: "..."
-  /(https?:\\?\/\\?\/[^"'\s]*mp4upload\.com[^"'\s]*\.mp4)/      // bilo koji .mp4 na mp4upload domenu
+  /(https?:\\?\/\\?\/[^"'\s]*mp4upload\.com[^"'\s]*\.(?:mp4|mkv|avi|m4v|webm|mov))/   // bilo koji video fajl na mp4upload domenu
 ];
 
 function findSource(html) {
